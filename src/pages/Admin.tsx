@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +11,9 @@ import { ArrowLeft, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/ImageUpload';
 import RichTextEditor from '@/components/RichTextEditor';
+import { useAuth } from '@/hooks/useAuth';
+import AdminLogin from '@/components/AdminLogin';
+import { LogOut } from 'lucide-react';
 
 interface Event {
   id?: string;
@@ -43,6 +45,7 @@ interface Program {
 }
 
 const Admin = () => {
+  const { user, loading, signOut } = useAuth();
   const { toast } = useToast();
   const [events, setEvents] = useState<Event[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -50,6 +53,25 @@ const Admin = () => {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
+
+  // Show loading spinner while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-white font-bold text-2xl">殿</span>
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login form if not authenticated
+  if (!user) {
+    return <AdminLogin onLogin={() => window.location.reload()} />;
+  }
 
   useEffect(() => {
     fetchAll();
@@ -144,6 +166,14 @@ const Admin = () => {
     } else {
       toast({ title: 'Error', description: 'Failed to delete program' });
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: 'Signed Out',
+      description: 'You have been successfully signed out.',
+    });
   };
 
   const EventForm = ({ event, onSave, onCancel }: { event?: Event, onSave: (event: Event) => void, onCancel: () => void }) => {
@@ -396,11 +426,22 @@ const Admin = () => {
               <div className="h-6 w-px bg-gray-300"></div>
               <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">殿</span>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">殿</span>
+                </div>
+                <span className="text-gray-700">{user.email}</span>
               </div>
-              <span className="text-gray-700">Sensei Admin</span>
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                size="sm"
+                className="rounded-xl"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
             </div>
           </div>
         </div>

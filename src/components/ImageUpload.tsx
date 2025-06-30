@@ -3,30 +3,48 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
-import { Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 interface ImageUploadProps {
   currentImage?: string;
-  onImageChange: (url: string) => void;
+  onImageChange: (url: string | undefined) => void;
   folder: string;
 }
 
 const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) => {
-  const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
+  const [uploading, setUploading] = useState(false);
 
-  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = async (event: React.ChangeEvent<HTMLInputegerElement>) => {
     try {
       setUploading(true);
       
-      if (!event.target.files || event.target.files.length === 0) {
-        throw new Error('Please select an image to upload');
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: 'Error',
+          description: 'File size must be less than 5MB',
+          variant: 'destructive',
+        });
+        return;
       }
 
-      const file = event.target.files[0];
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: 'Error',
+          description: 'Please select an image file',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       const fileExt = file.name.split('.').pop();
-      const fileName = `${folder}/${Math.random()}.${fileExt}`;
+      const fileName = `${folder}/${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('contents')
@@ -36,41 +54,51 @@ const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) 
         throw uploadError;
       }
 
-      const { data } = supabase.storage
-        .from('contents')
-        .getPublicUrl(fileName);
-
+      const { data } = supabase.storage.from('contents').getPublicUrl(fileName);
+      
       onImageChange(data.publicUrl);
-      toast({ title: 'Success', description: 'Image uploaded successfully' });
+      toast({
+        title: 'Success',
+        description: 'Image uploaded successfully',
+      });
     } catch (error: any) {
-      toast({ title: 'Error', description: error.message });
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to upload image',
+        variant: 'destructive',
+      });
     } finally {
       setUploading(false);
     }
   };
 
   const removeImage = () => {
-    onImageChange('');
+    onImageChange(undefined);
   };
 
   return (
     <div className="space-y-4">
-      {currentImage && (
+      {currentImage ? (
         <div className="relative">
-          <img 
-            src={currentImage} 
-            alt="Preview" 
-            className="w-32 h-32 object-cover rounded-lg"
+          <img
+            src={currentImage}
+            alt="Preview"
+            className="w-full h-48 object-cover rounded-2xl border"
           />
           <Button
             type="button"
             variant="destructive"
             size="sm"
-            className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0"
             onClick={removeImage}
+            className="absolute top-2 right-2 rounded-full w-8 h-8 p-0"
           >
             <X className="w-4 h-4" />
           </Button>
+        </div>
+      ) : (
+        <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center">
+          <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600 mb-4">No image selected</p>
         </div>
       )}
       
@@ -82,7 +110,12 @@ const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) 
           disabled={uploading}
           className="rounded-2xl"
         />
-        <Button type="button" disabled={uploading} className="rounded-2xl">
+        <Button
+          type="button"
+          variant="outline"
+          disabled={uploading}
+          className="rounded-2xl"
+        >
           <Upload className="w-4 h-4 mr-2" />
           {uploading ? 'Uploading...' : 'Upload'}
         </Button>
