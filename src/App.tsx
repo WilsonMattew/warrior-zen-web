@@ -4,14 +4,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navigation from "./components/Navigation";
-import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import Testimonials from "./pages/Testimonials";
-import Events from "./pages/Events";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
+import EventDetail from "./pages/EventDetail";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -21,20 +16,11 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Navigation />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/testimonials" element={<Testimonials />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

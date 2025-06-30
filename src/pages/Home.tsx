@@ -3,8 +3,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/lib/supabase';
-import { Link } from 'react-router-dom';
+import Navigation from '../components/Navigation';
+import { Star, Shield, Target, Heart, Phone, Mail, MapPin } from 'lucide-react';
 
 interface Program {
   id: string;
@@ -25,6 +28,7 @@ interface Testimonial {
 const Home = () => {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   useEffect(() => {
     fetchPrograms();
@@ -46,82 +50,113 @@ const Home = () => {
     const { data, error } = await supabase
       .from('testimonials')
       .select('*')
-      .limit(3);
+      .limit(6);
     
     if (data && !error) {
       setTestimonials(data);
     }
   };
 
-  const martialArts = [
-    { name: 'Kyumino', icon: '⚡' },
-    { name: 'Hojijutsu', icon: '🗡️' },
-    { name: 'Kirigama', icon: '⚔️' },
-    { name: 'Ninjando', icon: '🥷' },
-    { name: 'Hojijutsu', icon: '🛡️' },
-    { name: 'Naginata', icon: '🏹' }
-  ];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+    console.log('Form submitted:', formData);
+    setFormData({ name: '', email: '', message: '' });
+  };
 
   const values = [
     {
-      title: 'Develop self-defense and safety skills',
-      description: 'Learn practical techniques for personal protection'
+      icon: Shield,
+      title: 'Self-Defense Mastery',
+      description: 'Learn practical techniques for personal protection and confidence',
+      color: 'from-blue-400 to-blue-600'
     },
     {
-      title: 'Provides stress relief & mental clarity',
-      description: 'Find peace and focus through martial arts practice'
+      icon: Target,
+      title: 'Focus & Discipline',
+      description: 'Develop mental clarity and unwavering concentration',
+      color: 'from-purple-400 to-purple-600'
     },
     {
-      title: 'Develops discipline and focus',
-      description: 'Build character and mental strength'
+      icon: Heart,
+      title: 'Mind-Body Harmony',
+      description: 'Achieve balance between physical strength and inner peace',
+      color: 'from-pink-400 to-pink-600'
     },
     {
-      title: 'Boosted self confidence',
-      description: 'Gain confidence through skill mastery'
+      icon: Star,
+      title: 'Excellence in All',
+      description: 'Strive for perfection in every aspect of martial arts',
+      color: 'from-amber-400 to-amber-600'
     }
   ];
 
+  const martialArts = [
+    { name: 'Kyumino', image: 'https://images.unsplash.com/photo-1544717441-6b50a3ba3019?w=300&h=200&fit=crop' },
+    { name: 'Hojijutsu', image: 'https://images.unsplash.com/photo-1571019613540-14d15f8bd56b?w=300&h=200&fit=crop' },
+    { name: 'Kirigama', image: 'https://images.unsplash.com/photo-1606506351184-3b0e2c4b8fdc?w=300&h=200&fit=crop' },
+    { name: 'Ninjando', image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=300&h=200&fit=crop' },
+    { name: 'Naginata', image: 'https://images.unsplash.com/photo-1517438476312-10d79c077509?w=300&h=200&fit=crop' },
+    { name: 'Aikido', image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=300&h=200&fit=crop' }
+  ];
+
   return (
-    <div className="pt-16">
+    <div className="bg-gradient-to-b from-gray-50 to-white">
+      <Navigation />
+
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 opacity-10">
-          <svg viewBox="0 0 200 200" className="w-full h-full">
-            <path d="M20,20 Q180,20 180,180 Q20,180 20,20" fill="none" stroke="#dc2626" strokeWidth="2"/>
-            <circle cx="50" cy="50" r="3" fill="#dc2626"/>
-            <circle cx="150" cy="80" r="2" fill="#dc2626"/>
-            <circle cx="80" cy="150" r="2" fill="#dc2626"/>
-          </svg>
+      <section id="home" className="min-h-screen flex items-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-red-50 via-white to-pink-50"></div>
+        <div className="absolute top-0 right-0 w-1/3 h-full opacity-5">
+          <img 
+            src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=1200&fit=crop" 
+            alt="Cherry blossoms" 
+            className="w-full h-full object-cover"
+          />
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="mb-6">
-                <span className="text-6xl">殿</span>
+              <div className="mb-8">
+                <span className="text-8xl md:text-9xl opacity-20 font-light">殿</span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                ELEVATING <span className="text-red-600">⚡</span> WARRIOR<br />
+              <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+                ELEVATING<br />
+                <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+                  WARRIOR
+                </span><br />
                 CULTURE.
               </h1>
-              <p className="text-xl text-gray-600 mb-8 max-w-lg">
-                With martial arts, we strive for excellence in all things.
+              <p className="text-xl text-gray-600 mb-12 max-w-lg leading-relaxed">
+                With martial arts, we strive for excellence in all things. 
+                Discover the path to inner peace and physical mastery.
               </p>
-              <div className="flex items-center space-x-4 mb-8">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 bg-red-600 rounded-full border-2 border-white"></div>
-                  <div className="w-8 h-8 bg-gray-400 rounded-full border-2 border-white"></div>
-                  <div className="w-8 h-8 bg-gray-600 rounded-full border-2 border-white"></div>
-                  <div className="w-8 h-8 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold">2K</div>
+              <div className="flex items-center space-x-6 mb-12">
+                <div className="flex -space-x-3">
+                  {[1,2,3,4].map((i) => (
+                    <div key={i} className="w-12 h-12 rounded-full border-4 border-white overflow-hidden shadow-lg">
+                      <img 
+                        src={`https://images.unsplash.com/photo-${1500000000000 + i}?w=100&h=100&fit=crop&crop=face`}
+                        alt="Student"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full border-4 border-white flex items-center justify-center text-white font-bold shadow-lg">
+                    2K+
+                  </div>
                 </div>
-                <span className="text-sm text-gray-600">Trusted by 2.7K+ Members</span>
+                <span className="text-gray-600">Trusted by 2,700+ Students</span>
               </div>
-              <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full text-lg">
+              <Button 
+                onClick={() => document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-12 py-4 rounded-full text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
                 Explore Programs
               </Button>
             </motion.div>
@@ -132,14 +167,16 @@ const Home = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative bg-red-600 rounded-3xl p-8 text-white">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-red-700 rounded-3xl"></div>
-                <div className="relative">
-                  <div className="text-6xl mb-4">🥋</div>
-                  <h3 className="text-2xl font-bold mb-4">Building Martial Legacies Since 1985.</h3>
-                  <p className="text-red-100 mb-6">
-                    Four decades of excellence in martial arts training and character development.
-                  </p>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-600 rounded-[3rem] opacity-10 transform rotate-3"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1571019613540-14d15f8bd56b?w=600&h=700&fit=crop"
+                  alt="Martial artist"
+                  className="relative w-full h-[500px] object-cover rounded-[3rem] shadow-2xl"
+                />
+                <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-3xl shadow-xl">
+                  <div className="text-3xl font-bold text-gray-900">40+</div>
+                  <div className="text-gray-600">Years of Excellence</div>
                 </div>
               </div>
             </motion.div>
@@ -148,41 +185,119 @@ const Home = () => {
       </section>
 
       {/* Martial Arts Forms */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">Martial Arts Disciplines</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Master various traditional and modern martial arts forms under expert guidance
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {martialArts.map((art, index) => (
               <motion.div
                 key={art.name}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="text-center"
+                className="group"
               >
-                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                  {art.icon}
+                <div className="relative overflow-hidden rounded-3xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  <img 
+                    src={art.image}
+                    alt={art.name}
+                    className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="font-semibold">{art.name}</h3>
+                  </div>
                 </div>
-                <h3 className="font-semibold text-gray-900">{art.name}</h3>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* What We Offer */}
-      <section className="py-16 bg-gray-50">
+      {/* About Section */}
+      <section id="about" className="py-20 bg-gradient-to-br from-gray-50 to-red-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=700&fit=crop"
+                  alt="Sensei"
+                  className="w-full h-[500px] object-cover rounded-[3rem] shadow-2xl"
+                />
+                <div className="absolute -top-6 -left-6 bg-white p-8 rounded-3xl shadow-xl">
+                  <div className="text-6xl mb-2">殿</div>
+                  <div className="text-gray-600">Master Sensei</div>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+                Building Martial<br />
+                <span className="text-red-600">Legacies</span> Since 1985
+              </h2>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                For over four decades, our dojo has been a sanctuary for those seeking to master 
+                the ancient arts while embracing modern training methods. We believe in nurturing 
+                both the warrior spirit and the gentle heart.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {values.map((value, index) => (
+                  <motion.div
+                    key={value.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className={`w-12 h-12 bg-gradient-to-r ${value.color} rounded-2xl flex items-center justify-center mb-4`}>
+                      <value.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">{value.title}</h4>
+                    <p className="text-gray-600 text-sm">{value.description}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Programs Section */}
+      <section id="programs" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Your Best Choice For<br />Martial Arts Training
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Choose Your Path
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Choose from our comprehensive programs designed to meet your martial arts goals.
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              Discover the perfect program to begin or advance your martial arts journey
             </p>
           </motion.div>
 
@@ -191,27 +306,38 @@ const Home = () => {
               <motion.div
                 key={program.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group"
               >
-                <Card className="h-full hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{program.name}</h3>
-                    <p className="text-gray-600 mb-4">{program.description}</p>
-                    <div className="space-y-2 mb-6">
+                <Card className="h-full hover:shadow-2xl transition-all duration-300 border-0 rounded-3xl overflow-hidden group-hover:-translate-y-2">
+                  <div className="h-48 bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <img 
+                        src="https://images.unsplash.com/photo-1544717441-6b50a3ba3019?w=400&h=300&fit=crop"
+                        alt="Training"
+                        className="w-full h-full object-cover opacity-80"
+                      />
+                    </div>
+                  </div>
+                  <CardContent className="p-8">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{program.name}</h3>
+                    <p className="text-gray-600 mb-6 leading-relaxed">{program.description}</p>
+                    <div className="space-y-3 mb-8">
                       {program.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-                          <span className="text-sm text-gray-700">{feature}</span>
+                        <div key={idx} className="flex items-center space-x-3">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <span className="text-gray-700">{feature}</span>
                         </div>
                       ))}
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-3xl font-bold text-gray-900">${program.price}</span>
+                        <span className="text-4xl font-bold text-gray-900">${program.price}</span>
                         <span className="text-gray-600">/month</span>
                       </div>
-                      <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6">
+                      <Button className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white rounded-full px-8">
                         Join Class
                       </Button>
                     </div>
@@ -223,94 +349,48 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="py-16 bg-white">
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-gradient-to-br from-gray-50 to-pink-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-                TEEN & ADULT <span className="text-6xl">殿</span><br />
-                KARATE.
-              </h2>
-              <p className="text-gray-600 mb-8">
-                Train with us and achieve mastery of mind, body, and spirit.
-              </p>
-              <div className="flex items-center space-x-4 mb-8">
-                <div className="flex items-center space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-red-600 text-lg">★</span>
-                  ))}
-                </div>
-                <span className="text-gray-600">4.5 37 Prestige Awards | 2450 Members</span>
-              </div>
-              <div className="space-y-4">
-                {values.map((value, index) => (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{value.title}</h4>
-                      <p className="text-gray-600 text-sm">{value.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="bg-red-600 rounded-3xl p-8 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-red-700"></div>
-                <div className="relative text-center">
-                  <div className="text-8xl mb-4">🥋</div>
-                  <h3 className="text-2xl font-bold">Master Your Art</h3>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Preview */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              What Our Students Say
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Student Success Stories
             </h2>
-            <p className="text-gray-600">Hear from our martial arts community</p>
-          </div>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              Hear from our martial arts community about their transformative journey
+            </p>
+          </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="h-full">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-1 mb-4">
+                <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 rounded-3xl bg-white/80 backdrop-blur-sm">
+                  <CardContent className="p-8">
+                    <div className="flex items-center space-x-1 mb-6">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <span key={i} className="text-red-600">★</span>
+                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-gray-700 mb-4">"{testimonial.content}"</p>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
+                    <p className="text-gray-700 mb-6 leading-relaxed italic">
+                      "{testimonial.content}"
+                    </p>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                         {testimonial.name[0]}
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                        <p className="text-sm text-gray-600">{testimonial.belt_level}</p>
+                        <p className="text-gray-600 text-sm">{testimonial.belt_level}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -318,16 +398,172 @@ const Home = () => {
               </motion.div>
             ))}
           </div>
-          
-          <div className="text-center mt-8">
-            <Link to="/testimonials">
-              <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white">
-                View All Testimonials
-              </Button>
-            </Link>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Let's Get In Touch
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              Ready to begin your martial arts journey? Contact us for expert guidance
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <Card className="p-8 rounded-3xl border-0 shadow-xl">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="Your Name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="rounded-2xl border-gray-200 focus:border-red-500 h-14"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Your Email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="rounded-2xl border-gray-200 focus:border-red-500 h-14"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Textarea
+                      placeholder="Your Message"
+                      value={formData.message}
+                      onChange={(e) => setFormData({...formData, message: e.target.value})}
+                      className="rounded-2xl border-gray-200 focus:border-red-500 min-h-32"
+                      required
+                    />
+                  </div>
+                  <Button 
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-2xl h-14 shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Send Message
+                  </Button>
+                </form>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="space-y-8"
+            >
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Visit Our Dojo</h4>
+                    <p className="text-gray-600">123 Martial Arts Street<br />Tokyo, Japan 100-0001</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                    <Phone className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Call Us</h4>
+                    <p className="text-gray-600">+81 3-1234-5678</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Email Us</h4>
+                    <p className="text-gray-600">sensei@martialarts.dojo</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-8">
+                <img 
+                  src="https://images.unsplash.com/photo-1571019613540-14d15f8bd56b?w=500&h=300&fit=crop"
+                  alt="Dojo interior"
+                  className="w-full h-64 object-cover rounded-3xl shadow-lg"
+                />
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">殿</span>
+                </div>
+                <span className="text-2xl font-bold">Sensei Dojo</span>
+              </div>
+              <p className="text-gray-400 leading-relaxed">
+                Elevating warrior culture through traditional martial arts training 
+                and modern coaching techniques.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-semibold mb-6">Quick Links</h3>
+              <div className="space-y-3">
+                {['Home', 'About', 'Programs', 'Testimonials', 'Contact'].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' })}
+                    className="block text-gray-400 hover:text-white transition-colors"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-semibold mb-6">Connect With Us</h3>
+              <div className="flex space-x-4">
+                {['facebook', 'instagram', 'twitter', 'youtube'].map((social) => (
+                  <div key={social} className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors cursor-pointer">
+                    <span className="text-sm font-bold">{social[0].toUpperCase()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+            <p>© 2025 Sensei Dojo. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
