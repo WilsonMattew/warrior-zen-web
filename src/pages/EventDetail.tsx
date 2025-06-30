@@ -5,7 +5,9 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, Calendar, Tag, Clock, User } from 'lucide-react';
+import { Calendar, Tag, Clock, User, ArrowLeft } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface Event {
   id: string;
@@ -24,7 +26,11 @@ const EventDetail = () => {
 
   useEffect(() => {
     if (id) {
-      fetchEvent(id);
+      // Extract event ID from slug (format: title-slug-eventId)
+      const eventId = id.split('-').pop();
+      if (eventId) {
+        fetchEvent(eventId);
+      }
     }
   }, [id]);
 
@@ -37,15 +43,15 @@ const EventDetail = () => {
     
     if (data && !error) {
       setEvent(data);
-      fetchRelatedEvents(data.tags);
+      fetchRelatedEvents(data.tags, eventId);
     }
   };
 
-  const fetchRelatedEvents = async (tags: string[]) => {
+  const fetchRelatedEvents = async (tags: string[], currentEventId: string) => {
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .neq('id', id)
+      .neq('id', currentEventId)
       .limit(3);
     
     if (data && !error) {
@@ -73,6 +79,13 @@ const EventDetail = () => {
     return colors[tag] || 'bg-gray-100 text-gray-700';
   };
 
+  const createSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+  };
+
   if (!event) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -86,23 +99,20 @@ const EventDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/events" className="inline-flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back to Events</span>
-            </Link>
-            <Link to="/" className="text-gray-600 hover:text-red-600 transition-colors">
-              Home
-            </Link>
-          </div>
+      <Navigation />
+
+      {/* Back Button */}
+      <div className="pt-32 pb-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Link to="/events" className="inline-flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Events</span>
+          </Link>
         </div>
       </div>
 
       {/* Hero Section */}
-      <section className="py-12 bg-gradient-to-br from-red-50 via-white to-pink-50">
+      <section className="pb-12 bg-gradient-to-br from-red-50 via-white to-pink-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -195,7 +205,7 @@ const EventDetail = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Link to={`/events/${relatedEvent.id}`}>
+                  <Link to={`/events/${createSlug(relatedEvent.title)}-${relatedEvent.id}`}>
                     <Card className="h-full hover:shadow-xl transition-all duration-300 group border-0 rounded-3xl overflow-hidden hover:-translate-y-2">
                       <div className="aspect-video bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
                         <img 
@@ -247,6 +257,8 @@ const EventDetail = () => {
           </motion.div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

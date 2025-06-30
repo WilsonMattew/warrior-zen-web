@@ -5,7 +5,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Tag } from 'lucide-react';
+import { Calendar, Tag } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface Event {
   id: string;
@@ -56,20 +58,19 @@ const Events = () => {
     return colors[tag] || 'bg-gray-100 text-gray-700';
   };
 
+  const createSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link to="/" className="inline-flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Home</span>
-          </Link>
-        </div>
-      </div>
-
+      <Navigation />
+      
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-red-50 via-white to-pink-50 relative overflow-hidden">
+      <section className="pt-32 pb-20 bg-gradient-to-br from-red-50 via-white to-pink-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <img 
             src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=800&fit=crop"
@@ -127,7 +128,7 @@ const Events = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link to={`/events/${event.id}`}>
+                <Link to={`/events/${createSlug(event.title)}-${event.id}`}>
                   <Card className="h-full hover:shadow-2xl transition-all duration-300 group border-0 rounded-3xl overflow-hidden hover:-translate-y-2">
                     <div className="aspect-video bg-gradient-to-br from-red-500 via-red-600 to-red-700 relative overflow-hidden">
                       <img 
@@ -186,6 +187,8 @@ const Events = () => {
           )}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
