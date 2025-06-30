@@ -349,7 +349,13 @@ const Admin = () => {
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900">Manage Events</h2>
                 <Button 
-                  onClick={() => setEditingEvent({})}
+                  onClick={() => setEditingEvent({
+                    title: '',
+                    content: '',
+                    excerpt: '',
+                    date: new Date().toISOString().split('T')[0],
+                    tags: []
+                  })}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -407,7 +413,12 @@ const Admin = () => {
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900">Manage Testimonials</h2>
                 <Button 
-                  onClick={() => setEditingTestimonial({})}
+                  onClick={() => setEditingTestimonial({
+                    name: '',
+                    content: '',
+                    belt_level: '',
+                    rating: 5
+                  })}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -465,7 +476,12 @@ const Admin = () => {
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900">Manage Programs</h2>
                 <Button 
-                  onClick={() => setEditingProgram({})}
+                  onClick={() => setEditingProgram({
+                    name: '',
+                    description: '',
+                    price: 0,
+                    features: []
+                  })}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
