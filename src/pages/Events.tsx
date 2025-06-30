@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,6 +16,8 @@ interface Event {
   date: string;
   tags: string[];
   created_at: string;
+  slug?: string;
+  thumbnail_url?: string;
 }
 
 const Events = () => {
@@ -56,13 +57,6 @@ const Events = () => {
       'Basics': 'bg-gray-100 text-gray-700'
     };
     return colors[tag] || 'bg-gray-100 text-gray-700';
-  };
-
-  const createSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
   };
 
   return (
@@ -128,11 +122,11 @@ const Events = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link to={`/events/${createSlug(event.title)}-${event.id}`}>
+                <Link to={`/events/${event.slug || `${event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${event.id}`}`}>
                   <Card className="h-full hover:shadow-2xl transition-all duration-300 group border-0 rounded-3xl overflow-hidden hover:-translate-y-2">
                     <div className="aspect-video bg-gradient-to-br from-red-500 via-red-600 to-red-700 relative overflow-hidden">
                       <img 
-                        src={`https://images.unsplash.com/photo-${1550000000000 + index}?w=400&h=250&fit=crop`}
+                        src={event.thumbnail_url || `https://images.unsplash.com/photo-${1550000000000 + index}?w=400&h=250&fit=crop`}
                         alt={event.title}
                         className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-300"
                       />

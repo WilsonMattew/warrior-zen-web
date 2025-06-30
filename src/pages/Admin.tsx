@@ -10,6 +10,8 @@ import { supabase } from '@/lib/supabase';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ImageUpload from '@/components/ImageUpload';
+import RichTextEditor from '@/components/RichTextEditor';
 
 interface Event {
   id?: string;
@@ -18,6 +20,8 @@ interface Event {
   excerpt: string;
   date: string;
   tags: string[];
+  slug: string;
+  thumbnail_url?: string;
 }
 
 interface Testimonial {
@@ -26,6 +30,7 @@ interface Testimonial {
   content: string;
   belt_level: string;
   rating: number;
+  image_url?: string;
 }
 
 interface Program {
@@ -34,6 +39,7 @@ interface Program {
   description: string;
   price: number;
   features: string[];
+  thumbnail_url?: string;
 }
 
 const Admin = () => {
@@ -59,6 +65,13 @@ const Admin = () => {
     if (eventsRes.data) setEvents(eventsRes.data);
     if (testimonialsRes.data) setTestimonials(testimonialsRes.data);
     if (programsRes.data) setPrograms(programsRes.data);
+  };
+
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
   };
 
   const saveEvent = async (event: Event) => {
@@ -139,11 +152,21 @@ const Admin = () => {
       content: '',
       excerpt: '',
       date: new Date().toISOString().split('T')[0],
-      tags: []
+      tags: [],
+      slug: '',
+      thumbnail_url: ''
     });
 
     const handleTagsChange = (tagsString: string) => {
       setFormData({ ...formData, tags: tagsString.split(',').map(tag => tag.trim()) });
+    };
+
+    const handleTitleChange = (title: string) => {
+      setFormData({ 
+        ...formData, 
+        title,
+        slug: generateSlug(title)
+      });
     };
 
     return (
@@ -151,37 +174,60 @@ const Admin = () => {
         <CardHeader>
           <CardTitle>{event ? 'Edit Event' : 'New Event'}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <Input
             placeholder="Event Title"
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) => handleTitleChange(e.target.value)}
             className="rounded-2xl"
           />
+          
+          <Input
+            placeholder="Slug (auto-generated)"
+            value={formData.slug}
+            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+            className="rounded-2xl"
+          />
+          
           <Input
             type="date"
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
             className="rounded-2xl"
           />
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Thumbnail Image</label>
+            <ImageUpload
+              currentImage={formData.thumbnail_url}
+              onImageChange={(url) => setFormData({ ...formData, thumbnail_url: url })}
+              folder="events"
+            />
+          </div>
+          
           <Textarea
             placeholder="Excerpt"
             value={formData.excerpt}
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
             className="rounded-2xl"
           />
-          <Textarea
-            placeholder="Full Content"
-            value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            className="rounded-2xl min-h-32"
-          />
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Content</label>
+            <RichTextEditor
+              value={formData.content}
+              onChange={(content) => setFormData({ ...formData, content })}
+              placeholder="Write your event content here..."
+            />
+          </div>
+          
           <Input
             placeholder="Tags (comma separated)"
             value={formData.tags.join(', ')}
             onChange={(e) => handleTagsChange(e.target.value)}
             className="rounded-2xl"
           />
+          
           <div className="flex space-x-4">
             <Button onClick={() => onSave(formData)} className="rounded-2xl">
               <Save className="w-4 h-4 mr-2" />
@@ -201,7 +247,8 @@ const Admin = () => {
       name: '',
       content: '',
       belt_level: '',
-      rating: 5
+      rating: 5,
+      image_url: ''
     });
 
     return (
@@ -209,19 +256,30 @@ const Admin = () => {
         <CardHeader>
           <CardTitle>{testimonial ? 'Edit Testimonial' : 'New Testimonial'}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <Input
             placeholder="Student Name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="rounded-2xl"
           />
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Student Photo</label>
+            <ImageUpload
+              currentImage={formData.image_url}
+              onImageChange={(url) => setFormData({ ...formData, image_url: url })}
+              folder="testimonials"
+            />
+          </div>
+          
           <Input
             placeholder="Belt Level"
             value={formData.belt_level}
             onChange={(e) => setFormData({ ...formData, belt_level: e.target.value })}
             className="rounded-2xl"
           />
+          
           <Input
             type="number"
             min="1"
@@ -231,12 +289,14 @@ const Admin = () => {
             onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
             className="rounded-2xl"
           />
+          
           <Textarea
             placeholder="Testimonial Content"
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
             className="rounded-2xl min-h-24"
           />
+          
           <div className="flex space-x-4">
             <Button onClick={() => onSave(formData)} className="rounded-2xl">
               <Save className="w-4 h-4 mr-2" />
@@ -256,7 +316,8 @@ const Admin = () => {
       name: '',
       description: '',
       price: 0,
-      features: []
+      features: [],
+      thumbnail_url: ''
     });
 
     const handleFeaturesChange = (featuresString: string) => {
@@ -268,13 +329,23 @@ const Admin = () => {
         <CardHeader>
           <CardTitle>{program ? 'Edit Program' : 'New Program'}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <Input
             placeholder="Program Name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="rounded-2xl"
           />
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Program Thumbnail</label>
+            <ImageUpload
+              currentImage={formData.thumbnail_url}
+              onImageChange={(url) => setFormData({ ...formData, thumbnail_url: url })}
+              folder="programs"
+            />
+          </div>
+          
           <Input
             type="number"
             placeholder="Price"
@@ -282,18 +353,21 @@ const Admin = () => {
             onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
             className="rounded-2xl"
           />
+          
           <Textarea
             placeholder="Description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             className="rounded-2xl"
           />
+          
           <Textarea
             placeholder="Features (comma separated)"
             value={formData.features.join(', ')}
             onChange={(e) => handleFeaturesChange(e.target.value)}
             className="rounded-2xl"
           />
+          
           <div className="flex space-x-4">
             <Button onClick={() => onSave(formData)} className="rounded-2xl">
               <Save className="w-4 h-4 mr-2" />
@@ -354,7 +428,9 @@ const Admin = () => {
                     content: '',
                     excerpt: '',
                     date: new Date().toISOString().split('T')[0],
-                    tags: []
+                    tags: [],
+                    slug: '',
+                    thumbnail_url: ''
                   })}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
                 >
@@ -376,12 +452,22 @@ const Admin = () => {
                   <Card key={event.id} className="rounded-2xl border-0 shadow-lg">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{event.title}</h3>
-                          <p className="text-gray-600 text-sm mb-2">{event.excerpt}</p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>{new Date(event.date).toLocaleDateString()}</span>
-                            <span>Tags: {event.tags.join(', ')}</span>
+                        <div className="flex-1 flex space-x-4">
+                          {event.thumbnail_url && (
+                            <img 
+                              src={event.thumbnail_url} 
+                              alt={event.title}
+                              className="w-20 h-20 object-cover rounded-lg"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{event.title}</h3>
+                            <p className="text-gray-600 text-sm mb-2">{event.excerpt}</p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              <span>{new Date(event.date).toLocaleDateString()}</span>
+                              <span>Slug: {event.slug}</span>
+                              <span>Tags: {event.tags.join(', ')}</span>
+                            </div>
                           </div>
                         </div>
                         <div className="flex space-x-2">
@@ -417,7 +503,8 @@ const Admin = () => {
                     name: '',
                     content: '',
                     belt_level: '',
-                    rating: 5
+                    rating: 5,
+                    image_url: ''
                   })}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
                 >
@@ -439,12 +526,21 @@ const Admin = () => {
                   <Card key={testimonial.id} className="rounded-2xl border-0 shadow-lg">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{testimonial.name}</h3>
-                          <p className="text-gray-600 text-sm mb-2">"{testimonial.content}"</p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>{testimonial.belt_level}</span>
-                            <span>Rating: {testimonial.rating}/5</span>
+                        <div className="flex-1 flex space-x-4">
+                          {testimonial.image_url && (
+                            <img 
+                              src={testimonial.image_url} 
+                              alt={testimonial.name}
+                              className="w-16 h-16 object-cover rounded-full"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{testimonial.name}</h3>
+                            <p className="text-gray-600 text-sm mb-2">"{testimonial.content}"</p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              <span>{testimonial.belt_level}</span>
+                              <span>Rating: {testimonial.rating}/5</span>
+                            </div>
                           </div>
                         </div>
                         <div className="flex space-x-2">
@@ -480,7 +576,8 @@ const Admin = () => {
                     name: '',
                     description: '',
                     price: 0,
-                    features: []
+                    features: [],
+                    thumbnail_url: ''
                   })}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
                 >
@@ -502,12 +599,21 @@ const Admin = () => {
                   <Card key={program.id} className="rounded-2xl border-0 shadow-lg">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{program.name}</h3>
-                          <p className="text-gray-600 text-sm mb-2">{program.description}</p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>${program.price}/month</span>
-                            <span>Features: {program.features.join(', ')}</span>
+                        <div className="flex-1 flex space-x-4">
+                          {program.thumbnail_url && (
+                            <img 
+                              src={program.thumbnail_url} 
+                              alt={program.name}
+                              className="w-20 h-20 object-cover rounded-lg"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{program.name}</h3>
+                            <p className="text-gray-600 text-sm mb-2">{program.description}</p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              <span>${program.price}/month</span>
+                              <span>Features: {program.features.join(', ')}</span>
+                            </div>
                           </div>
                         </div>
                         <div className="flex space-x-2">
