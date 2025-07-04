@@ -52,11 +52,15 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">殿</span>
+            <div className="w-12 h-12 nsk-gradient rounded-2xl flex items-center justify-center shadow-lg">
+              <img 
+                src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png" 
+                alt="NSK Logo" 
+                className="w-8 h-8 object-contain brightness-0 invert"
+              />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-              Sensei Dojo
+            <span className="text-2xl font-bold nsk-text-gradient">
+              NSK Karate
             </span>
           </div>
 
@@ -68,15 +72,15 @@ const Navigation = () => {
                 onClick={() => scrollToSection(item.section)}
                 className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeSection === item.section
-                    ? 'bg-red-50 text-red-600 shadow-sm'
-                    : 'text-gray-600 hover:text-red-600 hover:bg-red-50/50'
+                    ? 'bg-blue-50 text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
                 }`}
               >
                 {item.name}
               </button>
             ))}
             <Link to="/events">
-              <Button className="ml-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Button className="ml-4 nsk-gradient hover:shadow-xl text-white rounded-full px-8 py-3 shadow-lg transition-all duration-300">
                 Events
               </Button>
             </Link>
@@ -98,7 +102,7 @@ const Navigation = () => {
                       onClick={() => scrollToSection(item.section)}
                       className={`text-left p-4 rounded-2xl text-lg font-medium transition-all ${
                         activeSection === item.section
-                          ? 'bg-red-50 text-red-600'
+                          ? 'bg-blue-50 text-blue-600'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
@@ -106,7 +110,7 @@ const Navigation = () => {
                     </button>
                   ))}
                   <Link to="/events">
-                    <Button className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl py-4 mt-4">
+                    <Button className="w-full nsk-gradient text-white rounded-2xl py-4 mt-4">
                       Events
                     </Button>
                   </Link>
