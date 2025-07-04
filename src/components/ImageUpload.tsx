@@ -16,7 +16,7 @@ const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) 
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
 
-  const uploadImage = async (event: React.ChangeEvent<HTMLInputegerElement>) => {
+  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
       

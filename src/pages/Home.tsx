@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ interface Program {
   description: string;
   price: number;
   features: string[];
+  thumbnail_url?: string;
 }
 
 interface Testimonial {
@@ -23,6 +23,7 @@ interface Testimonial {
   content: string;
   belt_level: string;
   rating: number;
+  image_url?: string;
 }
 
 const Home = () => {
@@ -75,19 +76,19 @@ const Home = () => {
       icon: Target,
       title: 'Focus & Discipline',
       description: 'Develop mental clarity and unwavering concentration',
-      color: 'from-purple-400 to-purple-600'
+      color: 'from-indigo-400 to-indigo-600'
     },
     {
       icon: Heart,
       title: 'Mind-Body Harmony',
       description: 'Achieve balance between physical strength and inner peace',
-      color: 'from-pink-400 to-pink-600'
+      color: 'from-purple-400 to-purple-600'
     },
     {
       icon: Star,
       title: 'Excellence in All',
       description: 'Strive for perfection in every aspect of martial arts',
-      color: 'from-amber-400 to-amber-600'
+      color: 'from-cyan-400 to-cyan-600'
     }
   ];
 
@@ -101,17 +102,17 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white">
+    <div className="bg-gradient-to-b from-blue-50 to-white">
       <Navigation />
 
       {/* Hero Section */}
       <section id="home" className="min-h-screen flex items-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-50 via-white to-pink-50"></div>
+        <div className="absolute inset-0 nsk-gradient-light"></div>
         <div className="absolute top-0 right-0 w-1/3 h-full opacity-5">
           <img 
-            src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=1200&fit=crop" 
-            alt="Cherry blossoms" 
-            className="w-full h-full object-cover"
+            src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png" 
+            alt="NSK Logo" 
+            className="w-full h-full object-contain"
           />
         </div>
         
@@ -123,11 +124,15 @@ const Home = () => {
               transition={{ duration: 0.8 }}
             >
               <div className="mb-8">
-                <span className="text-8xl md:text-9xl opacity-20 font-light">殿</span>
+                <img 
+                  src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png" 
+                  alt="NSK Logo" 
+                  className="w-24 h-24 opacity-80"
+                />
               </div>
               <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
                 ELEVATING<br />
-                <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+                <span className="nsk-text-gradient">
                   WARRIOR
                 </span><br />
                 CULTURE.
@@ -147,7 +152,7 @@ const Home = () => {
                       />
                     </div>
                   ))}
-                  <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full border-4 border-white flex items-center justify-center text-white font-bold shadow-lg">
+                  <div className="w-12 h-12 nsk-gradient rounded-full border-4 border-white flex items-center justify-center text-white font-bold shadow-lg">
                     2K+
                   </div>
                 </div>
@@ -155,7 +160,7 @@ const Home = () => {
               </div>
               <Button 
                 onClick={() => document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-12 py-4 rounded-full text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="nsk-gradient hover:opacity-90 text-white px-12 py-4 rounded-full text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 Explore Programs
               </Button>
@@ -168,7 +173,7 @@ const Home = () => {
               className="relative"
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-600 rounded-[3rem] opacity-10 transform rotate-3"></div>
+                <div className="absolute inset-0 nsk-gradient rounded-[3rem] opacity-10 transform rotate-3"></div>
                 <img 
                   src="https://images.unsplash.com/photo-1571019613540-14d15f8bd56b?w=600&h=700&fit=crop"
                   alt="Martial artist"
@@ -226,7 +231,7 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-gradient-to-br from-gray-50 to-red-50">
+      <section id="about" className="py-20 nsk-gradient-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -241,8 +246,12 @@ const Home = () => {
                   className="w-full h-[500px] object-cover rounded-[3rem] shadow-2xl"
                 />
                 <div className="absolute -top-6 -left-6 bg-white p-8 rounded-3xl shadow-xl">
-                  <div className="text-6xl mb-2">殿</div>
-                  <div className="text-gray-600">Master Sensei</div>
+                  <img 
+                    src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png" 
+                    alt="NSK Logo" 
+                    className="w-16 h-16"
+                  />
+                  <div className="text-gray-600 mt-2">Master Sensei</div>
                 </div>
               </div>
             </motion.div>
@@ -254,7 +263,7 @@ const Home = () => {
             >
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
                 Building Martial<br />
-                <span className="text-red-600">Legacies</span> Since 1985
+                <span className="nsk-text-gradient">Legacies</span> Since 1985
               </h2>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                 For over four decades, our dojo has been a sanctuary for those seeking to master 
@@ -311,11 +320,11 @@ const Home = () => {
                 className="group"
               >
                 <Card className="h-full hover:shadow-2xl transition-all duration-300 border-0 rounded-3xl overflow-hidden group-hover:-translate-y-2">
-                  <div className="h-48 bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
+                  <div className="h-48 nsk-gradient relative overflow-hidden">
                     <div className="absolute inset-0 bg-black/20"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <img 
-                        src="https://images.unsplash.com/photo-1544717441-6b50a3ba3019?w=400&h=300&fit=crop"
+                        src={program.thumbnail_url || "https://images.unsplash.com/photo-1544717441-6b50a3ba3019?w=400&h=300&fit=crop"}
                         alt="Training"
                         className="w-full h-full object-cover opacity-80"
                       />
@@ -327,7 +336,7 @@ const Home = () => {
                     <div className="space-y-3 mb-8">
                       {program.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center space-x-3">
-                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           <span className="text-gray-700">{feature}</span>
                         </div>
                       ))}
@@ -337,7 +346,7 @@ const Home = () => {
                         <span className="text-4xl font-bold text-gray-900">${program.price}</span>
                         <span className="text-gray-600">/month</span>
                       </div>
-                      <Button className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white rounded-full px-8">
+                      <Button className="nsk-gradient hover:opacity-90 text-white rounded-full px-8">
                         Join Class
                       </Button>
                     </div>
@@ -350,7 +359,7 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-gradient-to-br from-gray-50 to-pink-50">
+      <section id="testimonials" className="py-20 nsk-gradient-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -385,9 +394,17 @@ const Home = () => {
                       "{testimonial.content}"
                     </p>
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        {testimonial.name[0]}
-                      </div>
+                      {testimonial.image_url ? (
+                        <img 
+                          src={testimonial.image_url} 
+                          alt={testimonial.name}
+                          className="w-12 h-12 rounded-full object-cover shadow-lg"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 nsk-gradient rounded-full flex items-center justify-center text-white font-bold text-lg">
+                          {testimonial.name[0]}
+                        </div>
+                      )}
                       <div>
                         <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
                         <p className="text-gray-600 text-sm">{testimonial.belt_level}</p>
@@ -432,7 +449,7 @@ const Home = () => {
                       placeholder="Your Name"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="rounded-2xl border-gray-200 focus:border-red-500 h-14"
+                      className="rounded-2xl border-gray-200 focus:border-blue-500 h-14"
                       required
                     />
                   </div>
@@ -442,7 +459,7 @@ const Home = () => {
                       placeholder="Your Email"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="rounded-2xl border-gray-200 focus:border-red-500 h-14"
+                      className="rounded-2xl border-gray-200 focus:border-blue-500 h-14"
                       required
                     />
                   </div>
@@ -451,13 +468,13 @@ const Home = () => {
                       placeholder="Your Message"
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      className="rounded-2xl border-gray-200 focus:border-red-500 min-h-32"
+                      className="rounded-2xl border-gray-200 focus:border-blue-500 min-h-32"
                       required
                     />
                   </div>
                   <Button 
                     type="submit"
-                    className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-2xl h-14 shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="w-full nsk-gradient hover:opacity-90 text-white rounded-2xl h-14 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     Send Message
                   </Button>
@@ -473,7 +490,7 @@ const Home = () => {
             >
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 nsk-gradient rounded-2xl flex items-center justify-center">
                     <MapPin className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -493,12 +510,12 @@ const Home = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center">
                     <Mail className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1">Email Us</h4>
-                    <p className="text-gray-600">sensei@martialarts.dojo</p>
+                    <p className="text-gray-600">sensei@nsk-dojo.com</p>
                   </div>
                 </div>
               </div>
@@ -521,10 +538,14 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="space-y-6">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">殿</span>
+                <div className="w-12 h-12 nsk-gradient rounded-2xl flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png" 
+                    alt="NSK Logo" 
+                    className="w-8 h-8 brightness-0 invert"
+                  />
                 </div>
-                <span className="text-2xl font-bold">Sensei Dojo</span>
+                <span className="text-2xl font-bold">NSK Dojo</span>
               </div>
               <p className="text-gray-400 leading-relaxed">
                 Elevating warrior culture through traditional martial arts training 
@@ -551,7 +572,7 @@ const Home = () => {
               <h3 className="text-xl font-semibold mb-6">Connect With Us</h3>
               <div className="flex space-x-4">
                 {['facebook', 'instagram', 'twitter', 'youtube'].map((social) => (
-                  <div key={social} className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors cursor-pointer">
+                  <div key={social} className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
                     <span className="text-sm font-bold">{social[0].toUpperCase()}</span>
                   </div>
                 ))}
@@ -560,7 +581,7 @@ const Home = () => {
           </div>
 
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>© 2025 Sensei Dojo. All rights reserved.</p>
+            <p>© 2025 NSK Dojo. All rights reserved.</p>
           </div>
         </div>
       </footer>
