@@ -60,16 +60,16 @@ const Events = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-red-50 via-white to-pink-50 relative overflow-hidden">
+      <section className="pt-32 pb-20 nsk-gradient-light relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <img 
-            src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=800&fit=crop"
-            alt="Cherry blossoms"
-            className="w-full h-full object-cover"
+            src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png"
+            alt="NSK Logo"
+            className="w-full h-full object-contain"
           />
         </div>
         
@@ -81,11 +81,15 @@ const Events = () => {
             className="text-center"
           >
             <div className="mb-6">
-              <span className="text-8xl opacity-20 font-light">殿</span>
+              <img 
+                src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png" 
+                alt="NSK Logo" 
+                className="w-20 h-20 opacity-60 mx-auto"
+              />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               MARTIAL ARTS<br />
-              <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+              <span className="nsk-text-gradient">
                 INSIGHTS & EVENTS
               </span>
             </h1>

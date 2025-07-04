@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -105,16 +104,16 @@ const EventDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-12 bg-gradient-to-br from-red-50 via-white to-pink-50 relative overflow-hidden">
+      <section className="pt-32 pb-12 nsk-gradient-light relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <img 
-            src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=800&fit=crop"
-            alt="Cherry blossoms"
-            className="w-full h-full object-cover"
+            src="/lovable-uploads/b3eafb74-6688-408f-80fb-3ef4663ce71d.png"
+            alt="NSK Logo"
+            className="w-full h-full object-contain"
           />
         </div>
         

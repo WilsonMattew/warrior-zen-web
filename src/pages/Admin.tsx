@@ -44,15 +44,26 @@ interface Program {
   thumbnail_url?: string;
 }
 
+interface GalleryImage {
+  id?: string;
+  title: string;
+  description?: string;
+  image_url: string;
+  section: string;
+  display_order: number;
+}
+
 const Admin = () => {
   const { user, loading, signOut } = useAuth();
   const { toast } = useToast();
   const [events, setEvents] = useState<Event[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
+  const [editingGalleryImage, setEditingGalleryImage] = useState<GalleryImage | null>(null);
 
   // Show loading spinner while checking auth
   if (loading) {
@@ -78,15 +89,17 @@ const Admin = () => {
   }, []);
 
   const fetchAll = async () => {
-    const [eventsRes, testimonialsRes, programsRes] = await Promise.all([
+    const [eventsRes, testimonialsRes, programsRes, galleryRes] = await Promise.all([
       supabase.from('events').select('*').order('created_at', { ascending: false }),
       supabase.from('testimonials').select('*'),
-      supabase.from('programs').select('*').order('price')
+      supabase.from('programs').select('*').order('price'),
+      supabase.from('gallery').select('*').order('display_order')
     ]);
 
     if (eventsRes.data) setEvents(eventsRes.data);
     if (testimonialsRes.data) setTestimonials(testimonialsRes.data);
     if (programsRes.data) setPrograms(programsRes.data);
+    if (galleryRes.data) setGalleryImages(galleryRes.data);
   };
 
   const generateSlug = (title: string) => {
@@ -165,6 +178,30 @@ const Admin = () => {
       fetchAll();
     } else {
       toast({ title: 'Error', description: 'Failed to delete program' });
+    }
+  };
+
+  const saveGalleryImage = async (galleryImage: GalleryImage) => {
+    const { error } = galleryImage.id
+      ? await supabase.from('gallery').update(galleryImage).eq('id', galleryImage.id)
+      : await supabase.from('gallery').insert([galleryImage]);
+
+    if (!error) {
+      toast({ title: 'Success', description: 'Gallery image saved successfully' });
+      fetchAll();
+      setEditingGalleryImage(null);
+    } else {
+      toast({ title: 'Error', description: 'Failed to save gallery image' });
+    }
+  };
+
+  const deleteGalleryImage = async (id: string) => {
+    const { error } = await supabase.from('gallery').delete().eq('id', id);
+    if (!error) {
+      toast({ title: 'Success', description: 'Gallery image deleted successfully' });
+      fetchAll();
+    } else {
+      toast({ title: 'Error', description: 'Failed to delete gallery image' });
     }
   };
 
@@ -412,8 +449,75 @@ const Admin = () => {
     );
   };
 
+  const GalleryForm = ({ galleryImage, onSave, onCancel }: { galleryImage?: GalleryImage, onSave: (image: GalleryImage) => void, onCancel: () => void }) => {
+    const [formData, setFormData] = useState<GalleryImage>(galleryImage || {
+      title: '',
+      description: '',
+      image_url: '',
+      section: '',
+      display_order: 0
+    });
+
+    return (
+      <Card className="rounded-3xl border-0 shadow-xl">
+        <CardHeader>
+          <CardTitle>{galleryImage ? 'Edit Gallery Image' : 'New Gallery Image'}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Input
+            placeholder="Image Title"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="rounded-2xl"
+          />
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Gallery Image</label>
+            <ImageUpload
+              currentImage={formData.image_url}
+              onImageChange={(url) => setFormData({ ...formData, image_url: url || '' })}
+              folder="gallery"
+            />
+          </div>
+          
+          <Input
+            placeholder="Section (e.g., training, events, competitions)"
+            value={formData.section}
+            onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+            className="rounded-2xl"
+          />
+          
+          <Input
+            type="number"
+            placeholder="Display Order"
+            value={formData.display_order}
+            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+            className="rounded-2xl"
+          />
+          
+          <Textarea
+            placeholder="Description (optional)"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className="rounded-2xl"
+          />
+          
+          <div className="flex space-x-4">
+            <Button onClick={() => onSave(formData)} className="rounded-2xl">
+              <Save className="w-4 h-4 mr-2" />
+              Save
+            </Button>
+            <Button variant="outline" onClick={onCancel} className="rounded-2xl">
+              Cancel
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -454,10 +558,11 @@ const Admin = () => {
           transition={{ duration: 0.8 }}
         >
           <Tabs defaultValue="events" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-gray-100 p-1">
+            <TabsList className="grid w-full grid-cols-4 rounded-2xl bg-gray-100 p-1">
               <TabsTrigger value="events" className="rounded-xl">Events</TabsTrigger>
               <TabsTrigger value="testimonials" className="rounded-xl">Testimonials</TabsTrigger>
               <TabsTrigger value="programs" className="rounded-xl">Programs</TabsTrigger>
+              <TabsTrigger value="gallery" className="rounded-xl">Gallery</TabsTrigger>
             </TabsList>
 
             <TabsContent value="events" className="space-y-6">
@@ -670,6 +775,79 @@ const Admin = () => {
                             size="sm"
                             variant="destructive"
                             onClick={() => program.id && deleteProgram(program.id)}
+                            className="rounded-xl"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="gallery" className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">Manage Gallery</h2>
+                <Button 
+                  onClick={() => setEditingGalleryImage({
+                    title: '',
+                    description: '',
+                    image_url: '',
+                    section: '',
+                    display_order: 0
+                  })}
+                  className="nsk-gradient text-white rounded-2xl"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Gallery Image
+                </Button>
+              </div>
+
+              {editingGalleryImage && (
+                <GalleryForm
+                  galleryImage={editingGalleryImage.id ? editingGalleryImage : undefined}
+                  onSave={saveGalleryImage}
+                  onCancel={() => setEditingGalleryImage(null)}
+                />
+              )}
+
+              <div className="grid gap-4">
+                {galleryImages.map((image) => (
+                  <Card key={image.id} className="rounded-2xl border-0 shadow-lg">
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1 flex space-x-4">
+                          {image.image_url && (
+                            <img 
+                              src={image.image_url} 
+                              alt={image.title}
+                              className="w-20 h-20 object-cover rounded-lg"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{image.title}</h3>
+                            <p className="text-gray-600 text-sm mb-2">{image.description}</p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              <span>Section: {image.section}</span>
+                              <span>Order: {image.display_order}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingGalleryImage(image)}
+                            className="rounded-xl"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => image.id && deleteGalleryImage(image.id)}
                             className="rounded-xl"
                           >
                             <Trash2 className="w-4 h-4" />

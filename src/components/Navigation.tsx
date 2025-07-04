@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,9 +12,19 @@ const Navigation = () => {
     { name: 'Home', section: 'home' },
     { name: 'About Us', section: 'about' },
     { name: 'Programs', section: 'programs' },
+    { name: 'Gallery', section: 'gallery', isLink: true, href: '/gallery' },
     { name: 'Testimonials', section: 'testimonials' },
     { name: 'Contact', section: 'contact' },
   ];
+
+  const handleNavigation = (item: any) => {
+    if (item.isLink && item.href) {
+      window.location.href = item.href;
+    } else {
+      scrollToSection(item.section);
+    }
+    setIsOpen(false);
+  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -69,7 +78,7 @@ const Navigation = () => {
             {navItems.map((item) => (
               <button
                 key={item.name}
-                onClick={() => scrollToSection(item.section)}
+                onClick={() => handleNavigation(item)}
                 className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeSection === item.section
                     ? 'bg-blue-50 text-blue-600 shadow-sm'
@@ -99,7 +108,7 @@ const Navigation = () => {
                   {navItems.map((item) => (
                     <button
                       key={item.name}
-                      onClick={() => scrollToSection(item.section)}
+                      onClick={() => handleNavigation(item)}
                       className={`text-left p-4 rounded-2xl text-lg font-medium transition-all ${
                         activeSection === item.section
                           ? 'bg-blue-50 text-blue-600'

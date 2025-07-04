@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/lib/supabase';
 import Navigation from '../components/Navigation';
 import { Star, Shield, Target, Heart, Phone, Mail, MapPin } from 'lucide-react';
+import StatsSection from '../components/StatsSection';
+import AdmissionForm from '../components/AdmissionForm';
 
 interface Program {
   id: string;
@@ -189,6 +191,9 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <StatsSection />
+
       {/* Martial Arts Forms */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -346,9 +351,11 @@ const Home = () => {
                         <span className="text-4xl font-bold text-gray-900">${program.price}</span>
                         <span className="text-gray-600">/month</span>
                       </div>
-                      <Button className="nsk-gradient hover:opacity-90 text-white rounded-full px-8">
-                        Join Class
-                      </Button>
+                      <AdmissionForm selectedClass={program.name}>
+                        <Button className="nsk-gradient hover:opacity-90 text-white rounded-full px-8">
+                          Join Class
+                        </Button>
+                      </AdmissionForm>
                     </div>
                   </CardContent>
                 </Card>
