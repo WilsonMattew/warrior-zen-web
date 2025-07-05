@@ -44,6 +44,17 @@ CREATE TABLE IF NOT EXISTS admission_forms (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- Create contact forms table
+CREATE TABLE IF NOT EXISTS contact_forms (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50),
+  subject VARCHAR(255),
+  message TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
 -- Create stats table for homepage counters
 CREATE TABLE IF NOT EXISTS site_stats (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -65,6 +76,7 @@ ON CONFLICT (stat_name) DO NOTHING;
 -- Enable RLS
 ALTER TABLE gallery ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admission_forms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contact_forms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE site_stats ENABLE ROW LEVEL SECURITY;
 
 -- Gallery policies
@@ -74,6 +86,10 @@ CREATE POLICY "Authenticated users can manage gallery" ON gallery FOR ALL USING 
 -- Admission forms policies
 CREATE POLICY "Anyone can submit admission forms" ON admission_forms FOR INSERT WITH CHECK (true);
 CREATE POLICY "Authenticated users can view admission forms" ON admission_forms FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Contact forms policies
+CREATE POLICY "Anyone can submit contact forms" ON contact_forms FOR INSERT WITH CHECK (true);
+CREATE POLICY "Authenticated users can view contact forms" ON contact_forms FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Site stats policies
 CREATE POLICY "Public can view stats" ON site_stats FOR SELECT USING (true);

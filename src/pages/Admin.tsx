@@ -14,6 +14,7 @@ import RichTextEditor from '@/components/RichTextEditor';
 import { useAuth } from '@/hooks/useAuth';
 import AdminLogin from '@/components/AdminLogin';
 import { LogOut } from 'lucide-react';
+import SubmissionsManager from '@/components/SubmissionsManager';
 
 interface Event {
   id?: string;
@@ -523,7 +524,7 @@ const Admin = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/" className="inline-flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors">
+              <Link to="/" className="inline-flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
                 <ArrowLeft className="w-5 h-5" />
                 <span>Back to Home</span>
               </Link>
@@ -532,7 +533,7 @@ const Admin = () => {
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 nsk-gradient rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">殿</span>
                 </div>
                 <span className="text-gray-700">{user.email}</span>
@@ -557,13 +558,18 @@ const Admin = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Tabs defaultValue="events" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4 rounded-2xl bg-gray-100 p-1">
+          <Tabs defaultValue="submissions" className="space-y-8">
+            <TabsList className="grid w-full grid-cols-5 rounded-2xl bg-gray-100 p-1">
+              <TabsTrigger value="submissions" className="rounded-xl">Submissions</TabsTrigger>
               <TabsTrigger value="events" className="rounded-xl">Events</TabsTrigger>
               <TabsTrigger value="testimonials" className="rounded-xl">Testimonials</TabsTrigger>
               <TabsTrigger value="programs" className="rounded-xl">Programs</TabsTrigger>
               <TabsTrigger value="gallery" className="rounded-xl">Gallery</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="submissions">
+              <SubmissionsManager />
+            </TabsContent>
 
             <TabsContent value="events" className="space-y-6">
               <div className="flex justify-between items-center">
@@ -578,7 +584,7 @@ const Admin = () => {
                     slug: '',
                     thumbnail_url: ''
                   })}
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
+                  className="nsk-gradient text-white rounded-2xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   New Event
@@ -652,7 +658,7 @@ const Admin = () => {
                     rating: 5,
                     image_url: ''
                   })}
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
+                  className="nsk-gradient text-white rounded-2xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   New Testimonial
@@ -725,7 +731,7 @@ const Admin = () => {
                     features: [],
                     thumbnail_url: ''
                   })}
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl"
+                  className="nsk-gradient text-white rounded-2xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   New Program
