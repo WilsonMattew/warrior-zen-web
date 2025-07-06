@@ -8,41 +8,59 @@ import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 interface ImageUploadProps {
   currentImage?: string;
-  onImageChange: (url: string | undefined) => void;
+  onImageChange: (url: string | undefined, file?: File) => void;
   folder: string;
+  previewOnly?: boolean; // New prop to control upload behavior
 }
 
-const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) => {
+const ImageUpload = ({ currentImage, onImageChange, folder, previewOnly = false }: ImageUploadProps) => {
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(currentImage);
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
 
-  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: 'Error',
+        description: 'File size must be less than 5MB',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Error',
+        description: 'Please select an image file',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Create preview URL
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    setSelectedFile(file);
+
+    if (previewOnly) {
+      // Just set the preview and pass the file to parent
+      onImageChange(url, file);
+    } else {
+      // Upload immediately (existing behavior)
+      uploadImage(file);
+    }
+  };
+
+  const uploadImage = async (file: File) => {
     try {
       setUploading(true);
       
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: 'Error',
-          description: 'File size must be less than 5MB',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: 'Error',
-          description: 'Please select an image file',
-          variant: 'destructive',
-        });
-        return;
-      }
-
       const fileExt = file.name.split('.').pop();
       const fileName = `${folder}/${Date.now()}.${fileExt}`;
 
@@ -56,6 +74,7 @@ const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) 
 
       const { data } = supabase.storage.from('contents').getPublicUrl(fileName);
       
+      setPreviewUrl(data.publicUrl);
       onImageChange(data.publicUrl);
       toast({
         title: 'Success',
@@ -73,15 +92,62 @@ const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) 
   };
 
   const removeImage = () => {
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(undefined);
+    setSelectedFile(undefined);
     onImageChange(undefined);
   };
 
+  // Method to upload the selected file (called from parent)
+  const uploadSelectedFile = async (): Promise<string | undefined> => {
+    if (!selectedFile) return currentImage;
+    
+    try {
+      setUploading(true);
+      
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${folder}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('contents')
+        .upload(fileName, selectedFile);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from('contents').getPublicUrl(fileName);
+      
+      // Clean up blob URL
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      
+      setPreviewUrl(data.publicUrl);
+      return data.publicUrl;
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to upload image',
+        variant: 'destructive',
+      });
+      return undefined;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Expose upload method to parent component
+  (ImageUpload as any).uploadSelectedFile = uploadSelectedFile;
+
   return (
     <div className="space-y-4">
-      {currentImage ? (
+      {previewUrl ? (
         <div className="relative">
           <img
-            src={currentImage}
+            src={previewUrl}
             alt="Preview"
             className="w-full h-48 object-cover rounded-2xl border"
           />
@@ -106,19 +172,21 @@ const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) 
         <Input
           type="file"
           accept="image/*"
-          onChange={uploadImage}
+          onChange={handleFileSelect}
           disabled={uploading}
           className="rounded-2xl"
         />
-        <Button
-          type="button"
-          variant="outline"
-          disabled={uploading}
-          className="rounded-2xl"
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          {uploading ? 'Uploading...' : 'Upload'}
-        </Button>
+        {!previewOnly && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={uploading}
+            className="rounded-2xl"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {uploading ? 'Uploading...' : 'Upload'}
+          </Button>
+        )}
       </div>
     </div>
   );

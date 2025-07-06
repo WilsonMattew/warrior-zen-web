@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/ImageUpload';
-import RichTextEditor from '@/components/RichTextEditor';
+import SimpleTextEditor from '@/components/SimpleTextEditor';
 import { useAuth } from '@/hooks/useAuth';
 import AdminLogin from '@/components/AdminLogin';
 import { LogOut } from 'lucide-react';
@@ -25,6 +25,7 @@ interface Event {
   tags: string[];
   slug: string;
   thumbnail_url?: string;
+  pendingFile?: File;
 }
 
 interface Testimonial {
@@ -34,6 +35,7 @@ interface Testimonial {
   belt_level: string;
   rating: number;
   image_url?: string;
+  pendingFile?: File;
 }
 
 interface Program {
@@ -43,6 +45,7 @@ interface Program {
   price: number;
   features: string[];
   thumbnail_url?: string;
+  pendingFile?: File;
 }
 
 interface GalleryImage {
@@ -52,6 +55,7 @@ interface GalleryImage {
   image_url: string;
   section: string;
   display_order: number;
+  pendingFile?: File;
 }
 
 const Admin = () => {
@@ -111,16 +115,36 @@ const Admin = () => {
   };
 
   const saveEvent = async (event: Event) => {
-    const { error } = event.id
-      ? await supabase.from('events').update(event).eq('id', event.id)
-      : await supabase.from('events').insert([event]);
+    try {
+      // Handle image upload if there's a pending file
+      if (event.pendingFile) {
+        const fileExt = event.pendingFile.name.split('.').pop();
+        const fileName = `events/${Date.now()}.${fileExt}`;
 
-    if (!error) {
-      toast({ title: 'Success', description: 'Event saved successfully' });
-      fetchAll();
-      setEditingEvent(null);
-    } else {
-      toast({ title: 'Error', description: 'Failed to save event' });
+        const { error: uploadError } = await supabase.storage
+          .from('contents')
+          .upload(fileName, event.pendingFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('contents').getPublicUrl(fileName);
+        event.thumbnail_url = data.publicUrl;
+        delete event.pendingFile;
+      }
+
+      const { error } = event.id
+        ? await supabase.from('events').update(event).eq('id', event.id)
+        : await supabase.from('events').insert([event]);
+
+      if (!error) {
+        toast({ title: 'Success', description: 'Event saved successfully' });
+        fetchAll();
+        setEditingEvent(null);
+      } else {
+        toast({ title: 'Error', description: 'Failed to save event' });
+      }
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message || 'Failed to save event' });
     }
   };
 
@@ -135,16 +159,36 @@ const Admin = () => {
   };
 
   const saveTestimonial = async (testimonial: Testimonial) => {
-    const { error } = testimonial.id
-      ? await supabase.from('testimonials').update(testimonial).eq('id', testimonial.id)
-      : await supabase.from('testimonials').insert([testimonial]);
+    try {
+      // Handle image upload if there's a pending file
+      if (testimonial.pendingFile) {
+        const fileExt = testimonial.pendingFile.name.split('.').pop();
+        const fileName = `testimonials/${Date.now()}.${fileExt}`;
 
-    if (!error) {
-      toast({ title: 'Success', description: 'Testimonial saved successfully' });
-      fetchAll();
-      setEditingTestimonial(null);
-    } else {
-      toast({ title: 'Error', description: 'Failed to save testimonial' });
+        const { error: uploadError } = await supabase.storage
+          .from('contents')
+          .upload(fileName, testimonial.pendingFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('contents').getPublicUrl(fileName);
+        testimonial.image_url = data.publicUrl;
+        delete testimonial.pendingFile;
+      }
+
+      const { error } = testimonial.id
+        ? await supabase.from('testimonials').update(testimonial).eq('id', testimonial.id)
+        : await supabase.from('testimonials').insert([testimonial]);
+
+      if (!error) {
+        toast({ title: 'Success', description: 'Testimonial saved successfully' });
+        fetchAll();
+        setEditingTestimonial(null);
+      } else {
+        toast({ title: 'Error', description: 'Failed to save testimonial' });
+      }
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message || 'Failed to save testimonial' });
     }
   };
 
@@ -159,16 +203,36 @@ const Admin = () => {
   };
 
   const saveProgram = async (program: Program) => {
-    const { error } = program.id
-      ? await supabase.from('programs').update(program).eq('id', program.id)
-      : await supabase.from('programs').insert([program]);
+    try {
+      // Handle image upload if there's a pending file
+      if (program.pendingFile) {
+        const fileExt = program.pendingFile.name.split('.').pop();
+        const fileName = `programs/${Date.now()}.${fileExt}`;
 
-    if (!error) {
-      toast({ title: 'Success', description: 'Program saved successfully' });
-      fetchAll();
-      setEditingProgram(null);
-    } else {
-      toast({ title: 'Error', description: 'Failed to save program' });
+        const { error: uploadError } = await supabase.storage
+          .from('contents')
+          .upload(fileName, program.pendingFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('contents').getPublicUrl(fileName);
+        program.thumbnail_url = data.publicUrl;
+        delete program.pendingFile;
+      }
+
+      const { error } = program.id
+        ? await supabase.from('programs').update(program).eq('id', program.id)
+        : await supabase.from('programs').insert([program]);
+
+      if (!error) {
+        toast({ title: 'Success', description: 'Program saved successfully' });
+        fetchAll();
+        setEditingProgram(null);
+      } else {
+        toast({ title: 'Error', description: 'Failed to save program' });
+      }
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message || 'Failed to save program' });
     }
   };
 
@@ -183,16 +247,36 @@ const Admin = () => {
   };
 
   const saveGalleryImage = async (galleryImage: GalleryImage) => {
-    const { error } = galleryImage.id
-      ? await supabase.from('gallery').update(galleryImage).eq('id', galleryImage.id)
-      : await supabase.from('gallery').insert([galleryImage]);
+    try {
+      // Handle image upload if there's a pending file
+      if (galleryImage.pendingFile) {
+        const fileExt = galleryImage.pendingFile.name.split('.').pop();
+        const fileName = `gallery/${Date.now()}.${fileExt}`;
 
-    if (!error) {
-      toast({ title: 'Success', description: 'Gallery image saved successfully' });
-      fetchAll();
-      setEditingGalleryImage(null);
-    } else {
-      toast({ title: 'Error', description: 'Failed to save gallery image' });
+        const { error: uploadError } = await supabase.storage
+          .from('contents')
+          .upload(fileName, galleryImage.pendingFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('contents').getPublicUrl(fileName);
+        galleryImage.image_url = data.publicUrl;
+        delete galleryImage.pendingFile;
+      }
+
+      const { error } = galleryImage.id
+        ? await supabase.from('gallery').update(galleryImage).eq('id', galleryImage.id)
+        : await supabase.from('gallery').insert([galleryImage]);
+
+      if (!error) {
+        toast({ title: 'Success', description: 'Gallery image saved successfully' });
+        fetchAll();
+        setEditingGalleryImage(null);
+      } else {
+        toast({ title: 'Error', description: 'Failed to save gallery image' });
+      }
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message || 'Failed to save gallery image' });
     }
   };
 
@@ -215,7 +299,7 @@ const Admin = () => {
   };
 
   const EventForm = ({ event, onSave, onCancel }: { event?: Event, onSave: (event: Event) => void, onCancel: () => void }) => {
-    const [formData, setFormData] = useState<Event>(event || {
+    const [formData, setFormData] = useState<Event & { pendingFile?: File }>(event || {
       title: '',
       content: '',
       excerpt: '',
@@ -234,6 +318,14 @@ const Admin = () => {
         ...formData, 
         title,
         slug: generateSlug(title)
+      });
+    };
+
+    const handleImageChange = (url: string | undefined, file?: File) => {
+      setFormData({ 
+        ...formData, 
+        thumbnail_url: url,
+        pendingFile: file
       });
     };
 
@@ -268,8 +360,9 @@ const Admin = () => {
             <label className="block text-sm font-medium mb-2">Thumbnail Image</label>
             <ImageUpload
               currentImage={formData.thumbnail_url}
-              onImageChange={(url) => setFormData({ ...formData, thumbnail_url: url })}
+              onImageChange={handleImageChange}
               folder="events"
+              previewOnly={true}
             />
           </div>
           
@@ -282,7 +375,7 @@ const Admin = () => {
           
           <div>
             <label className="block text-sm font-medium mb-2">Content</label>
-            <RichTextEditor
+            <SimpleTextEditor
               value={formData.content}
               onChange={(content) => setFormData({ ...formData, content })}
               placeholder="Write your event content here..."
@@ -311,13 +404,21 @@ const Admin = () => {
   };
 
   const TestimonialForm = ({ testimonial, onSave, onCancel }: { testimonial?: Testimonial, onSave: (testimonial: Testimonial) => void, onCancel: () => void }) => {
-    const [formData, setFormData] = useState<Testimonial>(testimonial || {
+    const [formData, setFormData] = useState<Testimonial & { pendingFile?: File }>(testimonial || {
       name: '',
       content: '',
       belt_level: '',
       rating: 5,
       image_url: ''
     });
+
+    const handleImageChange = (url: string | undefined, file?: File) => {
+      setFormData({
+        ...formData,
+        image_url: url,
+        pendingFile: file
+      });
+    };
 
     return (
       <Card className="rounded-3xl border-0 shadow-xl">
@@ -336,8 +437,9 @@ const Admin = () => {
             <label className="block text-sm font-medium mb-2">Student Photo</label>
             <ImageUpload
               currentImage={formData.image_url}
-              onImageChange={(url) => setFormData({ ...formData, image_url: url })}
+              onImageChange={handleImageChange}
               folder="testimonials"
+              previewOnly={true}
             />
           </div>
           
@@ -350,8 +452,8 @@ const Admin = () => {
           
           <Input
             type="number"
-            min="1"
-            max="5"
+            min={1}
+            max={5}
             placeholder="Rating (1-5)"
             value={formData.rating}
             onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
@@ -380,7 +482,7 @@ const Admin = () => {
   };
 
   const ProgramForm = ({ program, onSave, onCancel }: { program?: Program, onSave: (program: Program) => void, onCancel: () => void }) => {
-    const [formData, setFormData] = useState<Program>(program || {
+    const [formData, setFormData] = useState<Program & { pendingFile?: File }>(program || {
       name: '',
       description: '',
       price: 0,
@@ -390,6 +492,14 @@ const Admin = () => {
 
     const handleFeaturesChange = (featuresString: string) => {
       setFormData({ ...formData, features: featuresString.split(',').map(feature => feature.trim()) });
+    };
+
+    const handleImageChange = (url: string | undefined, file?: File) => {
+      setFormData({
+        ...formData,
+        thumbnail_url: url,
+        pendingFile: file
+      });
     };
 
     return (
@@ -409,8 +519,9 @@ const Admin = () => {
             <label className="block text-sm font-medium mb-2">Program Thumbnail</label>
             <ImageUpload
               currentImage={formData.thumbnail_url}
-              onImageChange={(url) => setFormData({ ...formData, thumbnail_url: url })}
+              onImageChange={handleImageChange}
               folder="programs"
+              previewOnly={true}
             />
           </div>
           
@@ -451,13 +562,21 @@ const Admin = () => {
   };
 
   const GalleryForm = ({ galleryImage, onSave, onCancel }: { galleryImage?: GalleryImage, onSave: (image: GalleryImage) => void, onCancel: () => void }) => {
-    const [formData, setFormData] = useState<GalleryImage>(galleryImage || {
+    const [formData, setFormData] = useState<GalleryImage & { pendingFile?: File }>(galleryImage || {
       title: '',
       description: '',
       image_url: '',
       section: '',
       display_order: 0
     });
+
+    const handleImageChange = (url: string | undefined, file?: File) => {
+      setFormData({
+        ...formData,
+        image_url: url || '',
+        pendingFile: file
+      });
+    };
 
     return (
       <Card className="rounded-3xl border-0 shadow-xl">
@@ -476,8 +595,9 @@ const Admin = () => {
             <label className="block text-sm font-medium mb-2">Gallery Image</label>
             <ImageUpload
               currentImage={formData.image_url}
-              onImageChange={(url) => setFormData({ ...formData, image_url: url || '' })}
+              onImageChange={handleImageChange}
               folder="gallery"
+              previewOnly={true}
             />
           </div>
           
